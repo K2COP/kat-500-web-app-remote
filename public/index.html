@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KAT500 Remote</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>KAT500 <span class="subtitle">remote control</span></h1>
+    <div id="connIndicator" class="conn-indicator disconnected">
+      <span class="dot"></span>
+      <span id="connText">Disconnected</span>
+    </div>
+  </header>
+
+  <main>
+    <section id="faultBanner" class="fault-banner hidden">
+      <span id="faultText"></span>
+      <button id="clearFaultBtn">Clear fault</button>
+    </section>
+
+    <section class="panel">
+      <h2>Antenna</h2>
+      <div class="antenna-buttons">
+        <button class="antenna-btn" data-ant="1">ANT 1</button>
+        <button class="antenna-btn" data-ant="2">ANT 2</button>
+        <button class="antenna-btn" data-ant="3">ANT 3</button>
+        <button class="antenna-btn secondary" data-ant="0">Next &#8635;</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Mode</h2>
+      <div class="mode-buttons">
+        <button class="mode-btn" data-mode="bypass">Bypass</button>
+        <button class="mode-btn" data-mode="manual">Manual</button>
+        <button class="mode-btn" data-mode="auto">Auto</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Band</h2>
+      <select id="bandSelect"></select>
+    </section>
+
+    <section class="panel tune-panel">
+      <h2>Tune</h2>
+      <div class="tune-row">
+        <button id="tuneBtn" class="tune-btn">TUNE</button>
+        <button id="cancelTuneBtn" class="secondary">Cancel</button>
+      </div>
+      <div id="tuningIndicator" class="tuning-indicator hidden">Tuning&hellip;</div>
+    </section>
+
+    <section class="panel">
+      <h2>SWR</h2>
+      <div class="swr-readout">
+        <div>
+          <span class="swr-value" id="vswrValue">&mdash;</span>
+          <span class="swr-label">matched</span>
+        </div>
+        <div>
+          <span class="swr-value secondary-value" id="vswrBypassValue">&mdash;</span>
+          <span class="swr-label">bypass (antenna)</span>
+        </div>
+      </div>
+      <div class="swr-bar-track">
+        <div id="swrBar" class="swr-bar-fill"></div>
+      </div>
+    </section>
+
+    <section class="panel info-panel">
+      <h2>Device</h2>
+      <dl>
+        <dt>Firmware</dt><dd id="fwValue">&mdash;</dd>
+        <dt>Serial #</dt><dd id="snValue">&mdash;</dd>
+        <dt>Port</dt><dd id="portValue">&mdash;</dd>
+      </dl>
+    </section>
+
+    <section class="panel" id="connectPanel">
+      <h2>Connection</h2>
+      <div class="connect-row">
+        <select id="portSelect"></select>
+        <select id="baudSelect">
+          <option value="">Auto-detect baud</option>
+          <option value="38400">38400</option>
+          <option value="19200">19200</option>
+          <option value="9600">9600</option>
+          <option value="4800">4800</option>
+        </select>
+        <button id="refreshPortsBtn">Refresh</button>
+        <button id="connectBtn">Connect</button>
+      </div>
+    </section>
+
+    <section class="panel advanced-panel">
+      <details>
+        <summary>Advanced: raw command console</summary>
+        <div class="raw-row">
+          <input id="rawInput" placeholder="e.g. RV or AN1" />
+          <button id="rawSendBtn">Send</button>
+        </div>
+        <pre id="logOutput" class="log-output"></pre>
+      </details>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
