@@ -4,6 +4,8 @@ A browser-based remote control panel for the [Elecraft KAT500](https://elecraft.
 
 Created by **K2COP**.
 
+![KAT-500 Web App Remote control panel](docs/screenshot.png)
+
 ## Why this exists
 
 The KAT500 has no display and no network interface of its own — it's a serial-only device, reachable exclusively over its rear-panel "PC DATA" RS-232 port. Elecraft's own `KAT500 Utility` covers that, but it's Windows/Mac desktop software tied to whatever machine it's installed on.
