@@ -41,14 +41,62 @@ The server owns a single serial connection to the tuner and enforces the flow-co
 
 ## Setup
 
+This app runs on whatever computer the KAT500's USB/serial cable is plugged into — that machine acts as the server, and any browser (on that machine or elsewhere on your network) connects to it. You don't need any programming experience to set it up, just the steps below.
+
+### 1. Install Node.js
+
+This is the program the server runs on top of.
+
+1. Go to **https://nodejs.org** and download the version marked **LTS** (not "Current")
+2. Run the installer with the default options
+
+**Check it worked** — open a terminal (see below) and run:
+```
+node --version
+```
+You should see something like `v20.x.x`.
+
+- **Windows:** open the Start Menu, type `cmd`, press Enter
+- **macOS:** press `Cmd+Space`, type `Terminal`, press Enter
+
+### 2. Get the code onto your computer
+
+On this GitHub page, click the green **`<> Code`** button → **Download ZIP**, then extract it:
+- **Windows:** right-click the downloaded ZIP → **Extract All**
+- **macOS:** double-click the downloaded ZIP in Finder — it extracts automatically. Note the extracted folder will be named `kat-500-web-app-remote-main`.
+
+*(If you're comfortable with git, `git clone https://github.com/K2COP/kat-500-web-app-remote.git` works too.)*
+
+### 3. Open a terminal in that folder
+
+- **Windows:** open the extracted folder in File Explorer, click in the address bar at the top, type `cmd`, press Enter — a command prompt opens already pointed at that folder.
+- **macOS:** right-click the extracted folder in Finder → **New Terminal at Folder**. (If that option isn't there, open Terminal and type `cd ` followed by dragging the folder into the window, then press Enter.)
+
+### 4. Install and start the app
+
+In that terminal, run:
 ```
 npm install
+```
+Wait for it to finish (downloads some files, ~30 seconds), then:
+```
 npm start
 ```
+You should see `KAT500 web control listening on http://localhost:8500`. **Leave this window open** — closing it stops the app.
 
-Then open `http://localhost:8500` in a browser on that machine. Use the **Connection** panel to pick the serial port (e.g. `COM5` on Windows, `/dev/tty.usbserial-XXXX` on macOS/Linux) and click **Connect**. Leave baud on "Auto-detect" unless you know the tuner's configured rate.
+### 5. Plug in the KAT500 and connect
 
-The server writes its own `config.json` (git-ignored, see `config.example.json` for the shape) the first time you connect, and reconnects to that same port/baud automatically on every future start. Change `httpPort` there if `8500` conflicts with something else on your machine.
+1. Connect the KAT500 to this computer via USB (through your USB-to-serial adapter, if that's how it's wired) and power it on.
+2. Open Chrome or Safari and go to **http://localhost:8500**
+3. In the **Connection** panel, pick your device from the port dropdown, leave baud on **Auto-detect**, and click **Connect**.
+
+If the port doesn't show up in the list, the USB-to-serial adapter's driver probably isn't installed. Check what chip it uses (Windows: Device Manager; macOS: it'll be obvious from the port name, e.g. `SLAB_USBtoUART` = Silicon Labs, `usbserial` = FTDI) and grab the driver from [Silicon Labs](https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers), [FTDI](https://ftdichip.com/drivers/vcp-drivers/), or your adapter's manufacturer.
+
+### Next time
+
+You don't need to repeat steps 1–2. Just repeat steps 3–4 (open a terminal in the folder, `npm start`) whenever you want to use it, then open the browser page again.
+
+The server remembers your serial port and baud rate (in a `config.json` it creates on first connect — see `config.example.json` for the shape) and reconnects automatically every time it starts. Change `httpPort` there if `8500` conflicts with something else on your machine.
 
 ## Remote operation
 
