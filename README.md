@@ -143,6 +143,28 @@ tail -f ~/Library/Logs/kat500-web-remote.log                          # watch it
 ```
 To stop it permanently, `bootout` it (above) and delete the `.plist` file.
 
+### Keep it running automatically (Windows, recommended)
+
+Windows doesn't have `launchd`, but Task Scheduler does the same job — runs the server in the background at login and restarts it if it crashes, without a terminal window open.
+
+1. Find your Node.js path: open a command prompt and run `where node` (copy the first line it prints).
+2. Open **Task Scheduler** (Start Menu → type "Task Scheduler").
+3. In the right-hand panel, click **Create Task…** (not "Create Basic Task" — this one has the extra options we need).
+4. **General** tab: name it `KAT500 Web Remote`. Leave the rest default.
+5. **Triggers** tab → **New…** → Begin the task: **At log on** → OK.
+6. **Actions** tab → **New…**:
+   - Program/script: the path from step 1 (e.g. `C:\Program Files\nodejs\node.exe`)
+   - Add arguments: `server\index.js`
+   - Start in: the full path to this project folder (e.g. `C:\Users\YourName\kat-500-web-app-remote`)
+   - OK
+7. **Conditions** tab: uncheck "Start the task only if the computer is on AC power" if this is a laptop.
+8. **Settings** tab: check **If the task fails, restart every:** and set it to `1 minute`, with a generous restart count (e.g. `999`).
+9. Click **OK** to save (enter your Windows password if prompted).
+
+The task also runs immediately the next time you log in. To test it now without logging out, find it in the Task Scheduler Library list, right-click → **Run**, then check **http://localhost:8500**.
+
+To stop it permanently, right-click the task → **Disable** (or **Delete**).
+
 ## Remote operation
 
 If you're already running a remote-station setup (e.g. [TCI Remote Compactor](https://pure-editions.com/on7off/TCI-Remote-Compactor/) alongside Thetis/openHPSDR for a Hermes Lite 2 or Apache Labs ANAN), you likely don't need a separate VPN for this. Compactor's **Remote Web Shortcuts** feature proxies local web interfaces (it lists "antenna tuner" as a built-in example) through its existing tunnel. Point one of its shortcut slots at `http://localhost:8500` and the control panel becomes reachable from wherever you're operating, alongside your SDR control.
