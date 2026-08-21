@@ -177,7 +177,7 @@ This covers the "operate" surface — what you'd use remotely during a QSO. It i
 
 ## Related
 
-A web control app for the Elecraft KPA-500 amplifier is planned as a follow-on project, using the same bridge-server pattern (the KPA-500 also has a documented serial Programmer's Reference).
+Companion project: [KPA500 web remote](https://github.com/K2COP/kpa500-web-app-remote), for the Elecraft KPA500 linear amplifier — same bridge-server pattern, same look and feel.
 
 ## Disclaimer
 
