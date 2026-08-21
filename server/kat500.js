@@ -69,6 +69,7 @@ class KAT500 {
    * (SWR, fault, antenna, etc.) never linger and look live. */
   liveFieldDefaults() {
     return {
+      power: null,
       antenna: null,
       mode: null,
       bypass: null,
@@ -361,6 +362,10 @@ class KAT500 {
   handleMessage(token) {
     let m;
 
+    if ((m = /^PS([01])$/.exec(token))) {
+      this.setState({ power: m[1] === '1' });
+      return;
+    }
     if ((m = /^AN(\d)$/.exec(token))) {
       this.setState({ antenna: Number(m[1]) });
       return;
@@ -422,6 +427,7 @@ class KAT500 {
       await this.get('I', 500).catch(() => {});
       await this.get('RV').catch(() => {});
       await this.get('SN').catch(() => {});
+      await this.get('PS').catch(() => {});
       await this.get('AN').catch(() => {});
       await this.get('MD').catch(() => {});
       await this.get('BYP').catch(() => {});
@@ -455,6 +461,7 @@ class KAT500 {
         await this.get('FLT').catch(() => {});
       }
       if (this.pollTick % 5 === 0) {
+        await this.get('PS').catch(() => {});
         await this.get('AN').catch(() => {});
         await this.get('MD').catch(() => {});
         await this.get('BYP').catch(() => {});
@@ -486,6 +493,13 @@ class KAT500 {
       () => {}
     );
     return run;
+  }
+
+  setPower(on) {
+    return this.withLock(async () => {
+      await this.set(on ? 'PS1' : 'PS0');
+      return this.get('PS').catch(() => {});
+    });
   }
 
   setAntenna(n) {

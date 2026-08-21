@@ -37,6 +37,9 @@ async function postCommand(action, value) {
   }
 }
 
+el('powerOnBtn').addEventListener('click', () => postCommand('power', true));
+el('powerOffBtn').addEventListener('click', () => postCommand('power', false));
+
 document.querySelectorAll('.antenna-btn').forEach((btn) => {
   btn.addEventListener('click', () => postCommand('antenna', Number(btn.dataset.ant)));
 });
@@ -121,6 +124,9 @@ function renderState(state) {
     indicator.classList.add('disconnected');
     connText.textContent = state.lastError ? `Disconnected: ${state.lastError}` : 'Disconnected';
   }
+
+  el('powerOnBtn').classList.toggle('active', state.power === true);
+  el('powerOffBtn').classList.toggle('active', state.power === false);
 
   document.querySelectorAll('.antenna-btn[data-ant]').forEach((btn) => {
     const n = Number(btn.dataset.ant);

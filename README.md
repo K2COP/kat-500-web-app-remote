@@ -16,6 +16,7 @@ It talks to the KAT500 using the ASCII command set documented in Elecraft's own 
 
 ## Features
 
+- **Power on/off** — logically power the KAT500 on or off over serial, same as holding the front-panel MODE button
 - **Antenna select** — ANT 1/2/3, or cycle like the front-panel ANT button
 - **Mode** — Bypass / Manual / Auto, with instant visual feedback on change
 - **Band override**

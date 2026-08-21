@@ -61,6 +61,9 @@ app.post('/api/command', async (req, res) => {
   const { action, value } = req.body || {};
   try {
     switch (action) {
+      case 'power':
+        await kat.setPower(Boolean(value));
+        break;
       case 'antenna':
         await kat.setAntenna(Number(value));
         break;

@@ -99,12 +99,15 @@ select, input {
   padding: 10px;
 }
 
-.antenna-buttons, .mode-buttons {
+.antenna-buttons, .mode-buttons, .power-buttons {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 8px;
 }
 .mode-buttons { grid-template-columns: repeat(3, 1fr); }
+.power-buttons { grid-template-columns: repeat(2, 1fr); }
+.power-btn.active.power-on { background: #16391f; border-color: var(--green); color: #fff; }
+.power-btn.active.power-off { background: #3a1414; border-color: var(--red); color: #fff; }
 
 .fault-banner {
   display: flex;
