@@ -99,6 +99,50 @@ You don't need to repeat steps 1–2. Just repeat steps 3–4 (open a terminal i
 
 The server remembers your serial port and baud rate (in a `config.json` it creates on first connect — see `config.example.json` for the shape) and reconnects automatically every time it starts. Change `httpPort` there if `8500` conflicts with something else on your machine.
 
+**Heads up:** run with `npm start` this way, the app only stays up as long as that terminal window/tab stays open — closing it (or Ctrl-C) stops the server. If you also run the [KPA500 web remote](https://github.com/K2COP/kpa500-web-app-remote) and each is running in its own terminal, closing/interrupting one won't affect the other — they're independent processes on different ports (8500 vs 8600) talking to different USB-serial adapters. If you want either to survive closing its terminal, see below.
+
+### Keep it running automatically (macOS, recommended)
+
+Instead of leaving a terminal window open, you can have macOS run the server in the background as a `launchd` agent — it starts automatically at login and restarts itself if it ever crashes, independent of any terminal.
+
+1. Find your Node.js path: `which node` (copy the output).
+2. Create `~/Library/LaunchAgents/com.k2cop.kat500-web-remote.plist`:
+   ```xml
+   <?xml version="1.0" encoding="UTF-8"?>
+   <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+   <plist version="1.0">
+   <dict>
+       <key>Label</key>
+       <string>com.k2cop.kat500-web-remote</string>
+       <key>ProgramArguments</key>
+       <array>
+           <string><!-- paste `which node` output here --></string>
+           <string><!-- absolute path to this project's server/index.js --></string>
+       </array>
+       <key>WorkingDirectory</key>
+       <string><!-- absolute path to this project folder --></string>
+       <key>RunAtLoad</key>
+       <true/>
+       <key>KeepAlive</key>
+       <true/>
+       <key>StandardOutPath</key>
+       <string>~/Library/Logs/kat500-web-remote.log</string>
+       <key>StandardErrorPath</key>
+       <string>~/Library/Logs/kat500-web-remote.err.log</string>
+   </dict>
+   </plist>
+   ```
+3. Load it: `launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.k2cop.kat500-web-remote.plist`
+
+Useful commands afterward:
+```
+launchctl list | grep k2cop                                          # check it's running (shows a PID)
+launchctl kickstart -k gui/$(id -u)/com.k2cop.kat500-web-remote       # restart it
+launchctl bootout gui/$(id -u)/com.k2cop.kat500-web-remote            # stop it (until next login)
+tail -f ~/Library/Logs/kat500-web-remote.log                          # watch its output
+```
+To stop it permanently, `bootout` it (above) and delete the `.plist` file.
+
 ## Remote operation
 
 If you're already running a remote-station setup (e.g. [TCI Remote Compactor](https://pure-editions.com/on7off/TCI-Remote-Compactor/) alongside Thetis/openHPSDR for a Hermes Lite 2 or Apache Labs ANAN), you likely don't need a separate VPN for this. Compactor's **Remote Web Shortcuts** feature proxies local web interfaces (it lists "antenna tuner" as a built-in example) through its existing tunnel. Point one of its shortcut slots at `http://localhost:8500` and the control panel becomes reachable from wherever you're operating, alongside your SDR control.
