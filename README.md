@@ -99,6 +99,17 @@ You don't need to repeat steps 1–2. Just repeat steps 3–4 (open a terminal i
 
 The server remembers your serial port and baud rate (in a `config.json` it creates on first connect — see `config.example.json` for the shape) and reconnects automatically every time it starts. Change `httpPort` there if `8500` conflicts with something else on your machine.
 
+### Running alongside Elecraft's native app
+
+Only one program can hold the KAT500's serial port at a time, but this app and Elecraft's own `KAT500 Utility` share it automatically — no manual quitting required, in either direction:
+
+- **The server only holds the port while a browser tab of this app is actually open.** Close the last tab (or just don't open one) and the port sits free for the native app to grab.
+- **If a browser tab is open and you launch the native app anyway**, the server detects it almost immediately (well under a second), releases the port, and gets out of the way. The native app opens normally.
+- **When you quit the native app**, the server notices and reconnects automatically just as fast — no need to touch the browser tab; it'll pick back up on its own.
+- It doesn't matter which browser or how many tabs — any open tab of this app counts as "in use." A page refresh briefly closes and reopens that tab's connection, which the server tolerates without bouncing the serial port.
+
+In short: just open whichever one you want to use. The other gets out of the way by itself.
+
 **Heads up:** run with `npm start` this way, the app only stays up as long as that terminal window/tab stays open — closing it (or Ctrl-C) stops the server. If you also run the [KPA500 web remote](https://github.com/K2COP/kpa500-web-app-remote) and each is running in its own terminal, closing/interrupting one won't affect the other — they're independent processes on different ports (8500 vs 8600) talking to different USB-serial adapters. If you want either to survive closing its terminal, see below.
 
 ### Keep it running automatically (macOS, recommended)

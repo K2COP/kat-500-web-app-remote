@@ -117,8 +117,29 @@ kat.on('log', (line) => {
   broadcast('log', line);
 });
 
+// Hold the serial port only while a browser tab of the web remote is
+// actually connected, instead of always-on. That way the native Elecraft
+// app can open the port on its own the moment nobody's using the web
+// remote, without racing this server's poll-based yield below. The grace
+// period survives a page refresh (which briefly drops and reopens the
+// WebSocket) without bouncing the serial connection.
+let activeClients = 0;
+let lastClientDisconnectAt = null;
+const CLIENT_GRACE_MS = 5000;
+
+function wantsConnection() {
+  if (activeClients > 0) return true;
+  return Boolean(lastClientDisconnectAt) && Date.now() - lastClientDisconnectAt < CLIENT_GRACE_MS;
+}
+
 wss.on('connection', (ws) => {
+  activeClients++;
   ws.send(JSON.stringify({ type: 'state', payload: kat.getState() }));
+  checkConnectionState();
+  ws.on('close', () => {
+    activeClients--;
+    lastClientDisconnectAt = Date.now();
+  });
 });
 
 process.on('SIGINT', () => {
@@ -150,13 +171,14 @@ function attemptConnect() {
 // /dev/tty.usbserial-* for the same port, and on macOS those two device
 // nodes can't both be open at once. Unlike this server (which fails fast
 // and retries), the native app doesn't handle losing that race gracefully -
-// it just hangs waiting for the tuner. Since this server normally runs
-// all the time via LaunchAgent, that means the native app can never open
-// unless something proactively gets out of its way. Poll for the app and
-// release the port the moment it's running, then reclaim it once the app
-// closes.
+// it just hangs (or throws an unrecoverable error dialog) waiting for the
+// tuner, with no retry. On-demand connect (above) means this server no
+// longer holds the port by default, which handles the common case; this
+// poll is a backstop for when a browser tab is left open and the native
+// app is launched anyway - it still yields the moment the native app
+// appears, and reclaims the port once it closes.
 const NATIVE_APP_PATTERN = 'Elecraft KAT500 Utility.app';
-const NATIVE_APP_POLL_MS = 1000;
+const NATIVE_APP_POLL_MS = 150;
 
 function isNativeAppRunning() {
   return new Promise((resolve) => {
@@ -164,7 +186,7 @@ function isNativeAppRunning() {
   });
 }
 
-async function checkNativeApp() {
+async function checkConnectionState() {
   const running = await isNativeAppRunning();
   const state = kat.getState();
   if (running) {
@@ -172,10 +194,15 @@ async function checkNativeApp() {
       console.log(`${NATIVE_APP_PATTERN} detected - releasing serial port`);
       kat.disconnect();
     }
-  } else if (!state.connected && !state.connecting) {
-    attemptConnect();
+    return;
+  }
+  if (wantsConnection()) {
+    if (!state.connected && !state.connecting) attemptConnect();
+  } else if (state.connected || state.connecting) {
+    console.log('No web remote clients connected - releasing serial port');
+    kat.disconnect();
   }
 }
 
-setInterval(checkNativeApp, NATIVE_APP_POLL_MS);
-checkNativeApp();
+setInterval(checkConnectionState, NATIVE_APP_POLL_MS);
+checkConnectionState();
