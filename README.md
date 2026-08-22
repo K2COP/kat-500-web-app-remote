@@ -196,7 +196,9 @@ Companion project: [KPA500 web remote](https://github.com/K2COP/kpa500-web-app-r
 
 ## Disclaimer
 
-This is an independent, community project and is not affiliated with, endorsed by, or supported by Elecraft, Inc. "Elecraft" and "KAT500" are trademarks of Elecraft, Inc. Use at your own risk — this software drives relays in your antenna tuner over a live RF path.
+This is an independent, community project and is not affiliated with, endorsed by, or supported by Elecraft, Inc. "Elecraft" and "KAT500" are trademarks of Elecraft, Inc.
+
+This software may not be compatible with every KAT500 unit, firmware revision, or setup, and every attempt has been made to test it thoroughly and catch bugs before release — but no guarantee is made that it is free of them. You use this software entirely at your own risk. By using it, you assume full responsibility for any damage, injury, data loss, or other consequence that results, including but not limited to damage to the tuner, connected equipment, or antenna system. The author(s) and contributors are not liable for any direct, indirect, incidental, or consequential loss or damage arising from its use. This software drives relays in your antenna tuner over a live RF path — verify its behavior on your own equipment before relying on it, and always be prepared to fall back to the tuner's own front-panel controls.
 
 ## License
 
