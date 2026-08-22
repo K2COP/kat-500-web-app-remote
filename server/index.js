@@ -126,5 +126,17 @@ process.on('SIGINT', () => {
 if (config.serialPath) {
   kat
     .connect({ path: config.serialPath, baud: config.baudRate || null })
+    .then(() => {
+      // Persist whatever baud we ended up on so the next process start
+      // (e.g. the LaunchAgent firing at login/reboot) reuses it via
+      // openAt() instead of re-running autoBaud(). autoBaud() blindly
+      // probes multiple rates every restart with no idea what state the
+      // tuner is in - skipping it once a rate is known avoids that.
+      const { baud } = kat.getState();
+      if (baud && baud !== config.baudRate) {
+        config.baudRate = baud;
+        saveConfig(config);
+      }
+    })
     .catch((err) => console.error(`Auto-connect failed: ${err.message}`));
 }
