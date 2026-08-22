@@ -112,7 +112,10 @@ function broadcast(type, payload) {
 }
 
 kat.on('state', (state) => broadcast('state', state));
-kat.on('log', (line) => broadcast('log', line));
+kat.on('log', (line) => {
+  console.log(`[wire] ${line}`);
+  broadcast('log', line);
+});
 
 wss.on('connection', (ws) => {
   ws.send(JSON.stringify({ type: 'state', payload: kat.getState() }));
