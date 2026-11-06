@@ -321,7 +321,10 @@ class KAT500 {
    * echoes back, giving us flow control without guessing per-command timing.
    */
   async set(cmd, { syncTimeoutMs = 500 } = {}) {
-    this.enqueue(cmd, { awaitResponse: false });
+    // Not awaited, but must not be left unhandled: if the port isn't
+    // connected this rejects, and an unhandled rejection crashes Node. The
+    // same failure still surfaces to the caller via the ';' sync below.
+    this.enqueue(cmd, { awaitResponse: false }).catch(() => {});
     return this.enqueue(';', { awaitResponse: true, timeoutMs: syncTimeoutMs });
   }
 
@@ -329,7 +332,7 @@ class KAT500 {
    * service the serial port again until it completes, so we allow a long
    * timeout on the sync step rather than treating it as an error. */
   async startTune(cmd = 'T') {
-    this.enqueue(cmd, { awaitResponse: false });
+    this.enqueue(cmd, { awaitResponse: false }).catch(() => {}); // unhandled rejection would crash Node
     this.setState({ tuning: true });
     try {
       await this.enqueue(';', { awaitResponse: true, timeoutMs: 30000 });
